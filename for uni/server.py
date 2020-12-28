@@ -9,14 +9,13 @@ import select
 
 num_of_threads = []
 tcp_port = 2118
-server_name = 'HackerzServer\n'
 wait_time = 10
 udp_port = 13117
 buffer_size = 4096
-# global game_status 
-game_status = {'stat':False}
+# global game_status
+game_status = {'stat': False}
 score = {}
-groups = {'Group 1': [], 'Group 2':[]}
+groups = {'Group 1': [], 'Group 2': []}
 myHostName = socket.gethostname()
 # server_ip = socket.gethostbyname(myHostName)
 server_ip = get_if_addr('eth0')
@@ -28,6 +27,7 @@ tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind((server_ip, tcp_port))
 tcp_socket.listen(1)
 
+
 def start():
     while True:
         # game_status['stat'] = False
@@ -36,28 +36,33 @@ def start():
         score = {}
         try:
             num_of_threads.append(1)
-            _thread.start_new_thread(tcp_master,())
+            _thread.start_new_thread(tcp_master, ())
         except Exception as err:
             print(err)
         try:
             num_of_threads.append(1)
-            _thread.start_new_thread(udp_broadcast,())
+            _thread.start_new_thread(udp_broadcast, ())
         except Exception as err:
             print(err)
-        time.sleep(10)
+
+        time.sleep(20)
+
         while len(num_of_threads) > 0:
             pass
+
         user_input = input("To quit enter 'quit' text")
         if (user_input == 'quit'):
             break
+
 
 def udp_broadcast():
     start_time = time.time()
     while(time.time() - start_time <= 10):
         msg = bytes.fromhex('feedbeef02') + \
-                            (tcp_port).to_bytes(2, byteorder='big')
+            (tcp_port).to_bytes(2, byteorder='big')
         udp_socket.sendto(msg, ('<broadcast>', udp_port))
     num_of_threads.pop()
+    return
 
 
 def tcp_master():
@@ -65,8 +70,8 @@ def tcp_master():
     name_list = list()
     start_time = time.time()
     while(time.time() - start_time <= 10):
-        readable, writable, errored = select.select([tcp_socket], [], [],0)
-        if len(readable)>0:
+        readable, writable, errored = select.select([tcp_socket], [], [], 0)
+        if len(readable) > 0:
             client_socket, addr = tcp_socket.accept()
             name = client_socket.recv(buffer_size).decode()
             print(name)
@@ -101,6 +106,7 @@ def tcp_master():
     game_status['stat'] = False
     print(get_scores())
     num_of_threads.pop()
+    return
 
 
 def client_run(name, socket, addr, msg):
@@ -109,18 +115,19 @@ def client_run(name, socket, addr, msg):
     while not game_status['stat']:
         pass
     while game_status['stat']:
-        readable, writable, errored = select.select([socket], [], [],0)
-        if len(readable)>0:
+        readable, writable, errored = select.select([socket], [], [], 0)
+        if len(readable) > 0:
             char = socket.recv(1)
             score[name] += 1
     socket.send("finished".encode())
     num_of_threads.pop()
-
+    return
 
 
 def get_scores():
     group1_score = sum([score[team] for (team, _, _) in groups['Group 1']])
     group2_score = sum([score[team] for (team, _, _) in groups['Group 2']])
     return group1_score, group2_score
+
 
 start()
