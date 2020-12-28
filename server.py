@@ -22,6 +22,7 @@ udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 udp_socket.bind(('', udp_port))
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind(('', tcp_port))
+tcp_socket.listen(1)
 
 
 def start():
@@ -38,6 +39,10 @@ def start():
             _thread.start_new_thread(udp_broadcast,())
         except Exception as err:
             print(err)
+
+        time.sleep(20)
+        if (input("To quit enter 'quit' text otherwise enter anything") == 'quit'):
+            break
 
 
 def udp_broadcast():
