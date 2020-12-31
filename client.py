@@ -25,7 +25,7 @@ group_name = 'Team TCP/IP\n'
 wait_time = 10
 udp_port = 13117
 buffer_size = 4096
-my_ip = get_if_addr('eth1')
+my_ip = get_if_addr('eth2')
 broadcast_ip = str(ipaddress.ip_network(my_ip + '/16', False).broadcast_address)
 
 
@@ -83,7 +83,7 @@ def connect(addr, name, port):
 
 
 def game(sock):
-    sock.settimeout(20)
+    sock.settimeout(15)
     while True: # receive welcome message
         try:
             msg = sock.recv(buffer_size).decode()
@@ -93,6 +93,9 @@ def game(sock):
         if msg and len(msg)>0:
             print(msg)
             break
+        if not msg:
+            print(f"{bcolors.FAIL}TCP game receive start message error: empty start massage{bcolors.ENDC}")
+            return
         time.sleep(0.5)
 
     old_settings = termios.tcgetattr(sys.stdin)
@@ -115,6 +118,7 @@ def game(sock):
                     char = getch.getche()
                 except OverflowError:
                     print("change your key")
+                    continue
                 try:
                     sock.send(char.encode())
                 except (BrokenPipeError, ConnectionResetError):

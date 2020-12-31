@@ -118,7 +118,7 @@ tcp_port = 2118
 wait_time = 10
 udp_port = 13117
 buffer_size = 4096
-server_ip = get_if_addr('eth1')
+server_ip = get_if_addr('eth2')
 broadcast_ip = str(ipaddress.ip_network(server_ip + '/16', False).broadcast_address)
 
 num_of_threads = []
