@@ -234,7 +234,7 @@ def get_end_message():
 
     end_message+="************\n"
     end_message+= "Server record is: " + str(stats['score']) + " by team " + stats['name']
-    end_message += middle_finger#tcp_love
+    end_message += tcp_love#middle_finger
 
     return end_message
 # hackathon
